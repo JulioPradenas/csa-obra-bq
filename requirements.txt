@@ -1,0 +1,2 @@
+# Paso 1: solo tests. El cliente de BigQuery y el generador llegan después.
+pytest>=8.0.0
