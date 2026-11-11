@@ -175,6 +175,25 @@ def clasificar(
     return motives
 
 
+def huerfanas_en_silver(
+    tables: dict[str, list[dict[str, str]]],
+    motives: dict[str, list[str | None]],
+) -> int:
+    """FK rotas entre las filas que la prioridad dejó en silver. Tiene que dar 0."""
+    silver: dict[str, dict[str, dict[str, str]]] = {table: {} for table in TABLE_ORDER}
+    rotas = 0
+    for table in TABLE_ORDER:
+        for row, motivo in zip(tables[table], motives[table], strict=True):
+            if motivo is not None:
+                continue
+            if _fk_huerfana(table, row, silver):
+                rotas += 1
+                continue
+            if len(NATURAL_KEY[table]) == 1:
+                silver[table][row[NATURAL_KEY[table][0]]] = row
+    return rotas
+
+
 def contar(motives: dict[str, list[str | None]]) -> dict[str, dict[str, int]]:
     counts: dict[str, dict[str, int]] = {}
     for table, labels in motives.items():
