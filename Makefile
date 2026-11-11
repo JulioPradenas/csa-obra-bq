@@ -2,10 +2,10 @@
 # Uso: make test | make data | make bronze | make run
 #       make run DRY=1
 #
-# make run, cuando existan los scripts, reconstruye todo desde cero:
-# CSV, bronze, silver y gold (CREATE OR REPLACE, sin DML). Gold no parte
-# por fecha: cluster por obra_id y la segunda clave del hecho.
-# verify_bronze imprime OK/FAIL. verify_silver y verify_gold imprimen OK/FALLA.
+# make run en este paso reconstruye el bronze desde cero: CSV, DDL y load
+# (CREATE OR REPLACE + WRITE_TRUNCATE, sin DML). verify_bronze imprime
+# RESULTADO: OK o RESULTADO: FALLA.
+# Silver y gold siguen nombrados; el runner llega en un paso posterior.
 #
 # Sandbox (sin facturación): sin DML, sin streaming. Las tablas expiran
 # a los 60 días; por eso make run no depende de lo que haya quedado de
@@ -42,34 +42,20 @@ help:
 test:
 	$(PY) -m pytest -q
 
-# Paso 1 no trae los scripts. El target ya tiene el nombre del lab de Meli.
-# Si el archivo no está, se avisa y se sale: no se inventa un load.
-define require_script
-	@test -f $(1) || { echo "Paso 1: falta $(1). No se generan datos ni se carga GCP."; exit 1; }
-endef
-
 data:
-	$(call require_script,scripts/generate_data.py)
-	$(PY) scripts/generate_data.py
+	$(PY) scripts/generar_datos.py
 
 bronze:
-	$(call require_script,scripts/apply_ddl.py)
-	$(call require_script,scripts/load_bronze.py)
 	$(PY) scripts/apply_ddl.py $(DRY_FLAG)
 	$(PY) scripts/load_bronze.py $(DRY_FLAG)
 
 silver:
-	$(call require_script,scripts/build_silver.py)
-	$(PY) scripts/build_silver.py $(DRY_FLAG)
+	@echo "Paso 2: silver llega después. No se llama a BigQuery."
+	@exit 1
 
 gold:
-	$(call require_script,scripts/build_gold.py)
-	$(PY) scripts/build_gold.py $(DRY_FLAG)
+	@echo "Paso 2: gold llega después. No se llama a BigQuery."
+	@exit 1
 
-run: data bronze silver gold
-	$(call require_script,scripts/verify_bronze.py)
-	$(call require_script,scripts/verify_silver.py)
-	$(call require_script,scripts/verify_gold.py)
+run: data bronze
 	$(PY) scripts/verify_bronze.py $(DRY_FLAG)
-	$(PY) scripts/verify_silver.py $(DRY_FLAG)
-	$(PY) scripts/verify_gold.py $(DRY_FLAG)

@@ -22,30 +22,30 @@ Un número por KPI para el jefe de obra, en una obra vial del Gran Concepción: 
 
 Fórmulas: [docs/modelo-datos.md](docs/modelo-datos.md).
 
-## Solución (sandbox, por construir)
+## Solución
 
 ```text
 CSV sintéticos → bronze → silver (y q_<tabla>) → gold → Looker Studio
 ```
 
 - **Hechos:** `f_avance_partida`, `f_hh_cuadrilla`, `f_consumo_material`.
-- **Proyecto GCP:** el de `GCP_PROJECT`. No hay default. El nombre previsto en la Mac es `csa-obra-jp`; este paso no lo crea.
-- **Datasets previstos:** `csa_bronze`, `csa_silver`, `csa_gold`. Location `US`.
+- **Proyecto GCP:** el de `GCP_PROJECT`. No hay default. En la Mac el nombre es `csa-obra-jp`.
+- **Datasets:** `csa_bronze` ya se puede cargar. `csa_silver` y `csa_gold` siguen pendientes. Location `US`.
 - **Zona horaria:** `America/Santiago`.
 - **Expiración:** 60 días. Sin DML ni streaming. Gold va con `CLUSTER BY`, sin partición por fecha.
-- **ERP:** el relato habla de un SAP de obra. No hay conexión.
+- **ERP:** el relato habla de un SAP de obra. No hay conexión. El bronze es CSV sintético.
 
 ## Roadmap
 
 | Paso | Entrega | Estado |
 |---|---|---|
-| 1 | Esqueleto, modelo de datos, guía de estilo | este paso |
-| 2 | CSV sintéticos y bronze | pendiente |
+| 1 | Esqueleto, modelo de datos, guía de estilo | listo |
+| 2 | CSV sintéticos y bronze | este paso |
 | 3 | Silver y cuarentena | pendiente |
 | 4 | Gold | pendiente |
 | 5 | Looker Studio según la guía | pendiente |
 
-`make test` es lo único que corre hoy. `data`, `bronze`, `silver`, `gold` y `run` ya tienen nombre; los scripts llegan después. En CI, `DRY` parte en 1.
+`make run` regenera los CSV, reemplaza `csa_bronze` y verifica los conteos. En CI, `DRY` parte en 1 y esa corrida no llama a BigQuery. `make test` tampoco.
 
 ## Setup
 
@@ -56,13 +56,33 @@ pip install -r requirements.txt
 make test
 ```
 
-`make test` corre pytest. No llama a BigQuery. La auth del sandbox, cuando exista, es ADC en la Mac de Julio. Este repo no guarda llaves.
+## Paso 2 — correrlo en la Mac
+
+El proyecto `csa-obra-jp` está pensado para **BigQuery sandbox, sin facturación**. No hay DML ni streaming inserts. El camino es load job `WRITE_TRUNCATE` y `CREATE OR REPLACE`. Las tablas expiran a los 60 días.
+
+```bash
+gcloud auth application-default login
+export GCP_PROJECT=csa-obra-jp
+make run
+```
+
+`GCP_PROJECT` es obligatorio. Si falta, el script se detiene: no hay proyecto por defecto. Auth solo con ADC. No uses una llave de service account.
+
+Sin tocar GCP:
+
+```bash
+make data          # escribe data/raw/*.csv y data/manifest.json
+make run DRY=1     # regenera CSV + dry-run de DDL, load y verificación
+```
+
+`make run DRY=1` termina en `RESULTADO: OK` si el manifest cuadra con los CSV. Conteos, suciedad e historia (Los Batros con SPI 0,70; asfalto de Coronel con desviación 0,40): [docs/paso-02-bronze.md](docs/paso-02-bronze.md).
 
 ## Docs
 
 - [Modelo de datos](docs/modelo-datos.md) — grano, fórmulas, suciedad planeada, sandbox
+- [Paso 2 — bronze sandbox](docs/paso-02-bronze.md) — CSV, anomalías, load job, límite de 60 días
 - [Guía de estilo Looker Studio](looker/STYLE_GUIDE.md) — paleta, contraste AA, páginas en borrador
 
 ## Disclaimer
 
-Lab de portafolio. Marca con fines ilustrativos. El Paso 1 no genera datos y no abre GCP.
+Lab de portafolio. Marca con fines ilustrativos. El bronze es sintético y el sandbox lo borra a los 60 días. Silver, gold y Looker Studio siguen en los pasos siguientes.

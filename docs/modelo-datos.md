@@ -5,7 +5,7 @@
 
 **Analista:** Julio Pradenas  
 **Repo:** `csa-obra-bq`  
-**Paso:** 1 — forma de los datos, antes del generador, de BigQuery y de GCP.
+**Paso:** 1 fijó la forma. El Paso 2 materializa el CSV y el bronze; el contrato de grano no cambia.
 
 Este documento es el contrato de grano y de métricas. Si una fórmula cambia, se cambia aquí primero. El dashboard futuro lee gold. Bronze y la cuarentena no entran a un KPI.
 
@@ -85,7 +85,7 @@ El load del paso siguiente usa schema explícito STRING, `autodetect` apagado, `
 
 CSV: UTF-8, separador coma, decimal con punto, fecha `YYYY-MM-DD`, encabezado, campo vacío = NULL. Un decimal con coma va entre comillas (`"12,5"`) y es suciedad de cast, no un separador de columna.
 
-Cada tabla de abajo es una fila con la clave que se indica. El DDL vive en `sql/bronze/` y en este paso no se escribe.
+Cada tabla de abajo es una fila con la clave que se indica. El DDL está en [`sql/bronze/ddl.sql`](../sql/bronze/ddl.sql): todo STRING NULLABLE. El Paso 2 lo carga desde CSV.
 
 ### 5.1 `obras`
 
@@ -298,7 +298,7 @@ La cuarentena no entra al numerador ni al denominador de ningún KPI.
 
 ## 7. Suciedad planeada
 
-El generador todavía no existe. Esta lista es el encargo: cada motivo se planta como **filas extra**. El núcleo limpio no se muta. Los conteos quedan para el manifest del paso de datos; este paso no los inventa.
+Cada motivo se planta como **filas extra**. El núcleo limpio no se muta. Los conteos, por tabla y por motivo ganador, están en [`data/manifest.json`](../data/manifest.json) y en [paso-02-bronze.md](paso-02-bronze.md).
 
 Cada fila plantada trae un solo problema, para que el motivo se pueda ver. Además se planta al menos una fila con cast roto y PK vacía a la vez: el motivo tiene que ser `cast_fallido`.
 
@@ -586,10 +586,11 @@ Auth: Application Default Credentials, en la Mac de Julio. `GCP_PROJECT` es obli
 
 ---
 
-## 13. Qué queda fuera de este paso
+## 13. Qué queda fuera
 
-- El generador, el manifest y los conteos de suciedad.
-- El SQL de `sql/bronze/`, `sql/silver/` y `sql/gold/`.
+El Paso 2 ya escribió el generador, el manifest y el DDL bronze. Siguen fuera:
+
+- El SQL de `sql/silver/` y `sql/gold/`.
 - El informe de Looker Studio publicado.
 - Logos o piezas gráficas de la marca.
 - Cualquier conexión real al ERP.

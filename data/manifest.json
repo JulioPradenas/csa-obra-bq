@@ -1,0 +1,167 @@
+{
+  "aviso": "Lab de portafolio. Marca con fines ilustrativos.",
+  "seed": 42,
+  "dataset": "csa_bronze",
+  "location": "US",
+  "expiration_days": 60,
+  "horizon_start": "2026-05-04",
+  "horizon_end": "2026-09-21",
+  "fecha_inicio_obras": "2026-05-04",
+  "fecha_termino_obras": "2026-11-27",
+  "fraccion_programa_en_el_horizonte": "0.80",
+  "prioridad": "cast_fallido > nulo_obligatorio > duplicado > fk_huerfana > fecha_incoherente",
+  "motivos": [
+    "cast_fallido",
+    "nulo_obligatorio",
+    "duplicado",
+    "fk_huerfana",
+    "fecha_incoherente"
+  ],
+  "clean_counts": {
+    "obras": 7,
+    "proveedores": 5,
+    "partidas": 35,
+    "cuadrillas": 14,
+    "materiales": 6,
+    "programa_avance": 735,
+    "medicion_avance": 735,
+    "parte_hh": 1470,
+    "presupuesto_material": 882,
+    "vale_consumo": 882
+  },
+  "row_counts": {
+    "obras": 12,
+    "proveedores": 8,
+    "partidas": 39,
+    "cuadrillas": 18,
+    "materiales": 10,
+    "programa_avance": 742,
+    "medicion_avance": 740,
+    "parte_hh": 1476,
+    "presupuesto_material": 887,
+    "vale_consumo": 887
+  },
+  "anomalies": {
+    "obras": {
+      "cast_fallido": 2,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 0,
+      "fecha_incoherente": 1
+    },
+    "proveedores": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 0,
+      "fecha_incoherente": 0
+    },
+    "partidas": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 1,
+      "fecha_incoherente": 0
+    },
+    "cuadrillas": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 1,
+      "fecha_incoherente": 0
+    },
+    "materiales": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 1,
+      "fecha_incoherente": 0
+    },
+    "programa_avance": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 2,
+      "fecha_incoherente": 2
+    },
+    "medicion_avance": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 1,
+      "fecha_incoherente": 1
+    },
+    "parte_hh": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 2,
+      "fecha_incoherente": 1
+    },
+    "presupuesto_material": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 1,
+      "fecha_incoherente": 1
+    },
+    "vale_consumo": {
+      "cast_fallido": 1,
+      "nulo_obligatorio": 1,
+      "duplicado": 1,
+      "fk_huerfana": 1,
+      "fecha_incoherente": 1
+    }
+  },
+  "historia": {
+    "obra_atrasada": {
+      "obra_id": "OBR-01",
+      "obra_nombre": "Reposición calzada Los Batros",
+      "comuna": "San Pedro de la Paz",
+      "estado_obra": "en_ejecucion",
+      "spi": "0.70",
+      "avance_fisico_al_corte": "0.56"
+    },
+    "obra_al_dia": {
+      "obra_id": "OBR-02",
+      "obra_nombre": "Conservación costanera Talcahuano",
+      "comuna": "Talcahuano",
+      "spi": "1.05",
+      "avance_fisico_al_corte": "0.84"
+    },
+    "obra_paralizada": {
+      "obra_id": "OBR-06",
+      "obra_nombre": "Conservación ruta Hualpén",
+      "comuna": "Hualpén",
+      "estado_obra": "paralizada",
+      "spi": "0.55"
+    },
+    "sobreconsumo": {
+      "obra_id": "OBR-05",
+      "obra_nombre": "Reposición acceso Coronel",
+      "partida_id": "PAR-05-203",
+      "partida_nombre": "Carpeta asfáltica",
+      "material_id": "MAT-ASF",
+      "material_nombre": "Cemento asfáltico",
+      "desviacion": "0.40",
+      "nota": "El vale es obra × material × semana. El residente atribuye el asfalto de más a la carpeta de esta obra; el grano no prorratea."
+    },
+    "hh_tierras": {
+      "lenta": {
+        "obra_id": "OBR-01",
+        "hh_por_unidad": "1.40"
+      },
+      "al_dia": {
+        "obra_id": "OBR-02",
+        "hh_por_unidad": "0.80"
+      }
+    }
+  },
+  "prioridad_demo": {
+    "tabla": "obras",
+    "obra_nombre": "Fila con cast y clave vacía",
+    "motivo": "cast_fallido",
+    "nota": "fecha_inicio=NO-CAST y obra_id vacío. Gana el cast."
+  },
+  "nota": "row_counts es el total bronze (lo que num_rows tiene que igualar). anomalies cuenta filas extra por el motivo ganador. row_counts = clean_counts + suma de anomalies. clean_counts es lo que queda en silver si la prioridad se aplica igual. Los ceros también van, para que no haya un motivo olvidado."
+}

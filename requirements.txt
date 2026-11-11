@@ -1,2 +1,3 @@
-# Paso 1: solo tests. El cliente de BigQuery y el generador llegan después.
+# Tests y el cliente de BigQuery (load jobs y DDL). El Paso 2 no abre GCP en CI.
 pytest>=8.0.0
+google-cloud-bigquery>=3.25.0
