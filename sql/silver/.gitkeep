@@ -1,1 +1,1 @@
-# SQL silver (SAFE_CAST y q_<tabla>). El Paso 1 no crea tablas.
+# SQL silver por tabla. El Paso 3 lo escribe en NN_<tabla>.sql.

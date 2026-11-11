@@ -30,7 +30,7 @@ CSV sintéticos → bronze → silver (y q_<tabla>) → gold → Looker Studio
 
 - **Hechos:** `f_avance_partida`, `f_hh_cuadrilla`, `f_consumo_material`.
 - **Proyecto GCP:** el de `GCP_PROJECT`. No hay default. En la Mac el nombre es `csa-obra-jp`.
-- **Datasets:** `csa_bronze` ya se puede cargar. `csa_silver` y `csa_gold` siguen pendientes. Location `US`.
+- **Datasets:** `csa_bronze` y `csa_silver` (con `q_<tabla>`). `csa_gold` sigue pendiente. Location `US`.
 - **Zona horaria:** `America/Santiago`.
 - **Expiración:** 60 días. Sin DML ni streaming. Gold va con `CLUSTER BY`, sin partición por fecha.
 - **ERP:** el relato habla de un SAP de obra. No hay conexión. El bronze es CSV sintético.
@@ -40,12 +40,12 @@ CSV sintéticos → bronze → silver (y q_<tabla>) → gold → Looker Studio
 | Paso | Entrega | Estado |
 |---|---|---|
 | 1 | Esqueleto, modelo de datos, guía de estilo | listo |
-| 2 | CSV sintéticos y bronze | este paso |
-| 3 | Silver y cuarentena | pendiente |
+| 2 | CSV sintéticos y bronze | listo |
+| 3 | Silver y cuarentena | este paso |
 | 4 | Gold | pendiente |
 | 5 | Looker Studio según la guía | pendiente |
 
-`make run` regenera los CSV, reemplaza `csa_bronze` y verifica los conteos. En CI, `DRY` parte en 1 y esa corrida no llama a BigQuery. `make test` tampoco.
+`make run` regenera los CSV, reemplaza bronze y silver, y verifica los conteos. En CI, `DRY` parte en 1 y esa corrida no llama a BigQuery. `make test` tampoco.
 
 ## Setup
 
@@ -75,14 +75,15 @@ make data          # escribe data/raw/*.csv y data/manifest.json
 make run DRY=1     # regenera CSV + dry-run de DDL, load y verificación
 ```
 
-`make run DRY=1` termina en `RESULTADO: OK` si el manifest cuadra con los CSV. Conteos, suciedad e historia (Los Batros con SPI 0,70; asfalto de Coronel con desviación 0,40): [docs/paso-02-bronze.md](docs/paso-02-bronze.md).
+`make run DRY=1` termina en `RESULTADO: OK` si el manifest cuadra con los CSV y con la cuarentena. Conteos de bronze: [docs/paso-02-bronze.md](docs/paso-02-bronze.md). Silver y la tabla de esperados: [docs/paso-03-silver.md](docs/paso-03-silver.md).
 
 ## Docs
 
 - [Modelo de datos](docs/modelo-datos.md) — grano, fórmulas, suciedad planeada, sandbox
 - [Paso 2 — bronze sandbox](docs/paso-02-bronze.md) — CSV, anomalías, load job, límite de 60 días
+- [Paso 3 — silver y cuarentena](docs/paso-03-silver.md) — SAFE_CAST, un motivo por fila, conteos
 - [Guía de estilo Looker Studio](looker/STYLE_GUIDE.md) — paleta, contraste AA, páginas en borrador
 
 ## Disclaimer
 
-Lab de portafolio. Marca con fines ilustrativos. El bronze es sintético y el sandbox lo borra a los 60 días. Silver, gold y Looker Studio siguen en los pasos siguientes.
+Lab de portafolio. Marca con fines ilustrativos. Bronze y silver son sintéticos y el sandbox los borra a los 60 días. Gold y Looker Studio siguen en los pasos siguientes.

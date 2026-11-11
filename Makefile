@@ -1,18 +1,18 @@
 # CSA Obra — lab runners
-# Uso: make test | make data | make bronze | make run
+# Uso: make test | make data | make bronze | make silver | make run
 #       make run DRY=1
 #
-# make run en este paso reconstruye el bronze desde cero: CSV, DDL y load
-# (CREATE OR REPLACE + WRITE_TRUNCATE, sin DML). verify_bronze imprime
+# make run reconstruye bronze y silver desde cero: CSV, load y
+# CREATE OR REPLACE (sin DML). verify_bronze y verify_silver imprimen
 # RESULTADO: OK o RESULTADO: FALLA.
-# Silver y gold siguen nombrados; el runner llega en un paso posterior.
+# Gold sigue nombrado; el runner llega en un paso posterior.
 #
 # Sandbox (sin facturación): sin DML, sin streaming. Las tablas expiran
 # a los 60 días; por eso make run no depende de lo que haya quedado de
 # la corrida anterior.
 #
 # Auth: ADC, solo en la Mac de Julio. GCP_PROJECT es obligatorio para
-# bronze/run reales (no hay default). DRY=1 no llama a BigQuery.
+# una corrida real (no hay default). DRY=1 no llama a BigQuery.
 #
 # CI: GitHub Actions deja CI=true. En ese caso DRY parte en 1.
 # En la Mac, DRY parte en 0. El workflow además exporta DRY=1.
@@ -50,12 +50,12 @@ bronze:
 	$(PY) scripts/load_bronze.py $(DRY_FLAG)
 
 silver:
-	@echo "Paso 2: silver llega después. No se llama a BigQuery."
-	@exit 1
+	$(PY) scripts/build_silver.py $(DRY_FLAG)
 
 gold:
-	@echo "Paso 2: gold llega después. No se llama a BigQuery."
+	@echo "Paso 3: gold llega después. No se llama a BigQuery."
 	@exit 1
 
-run: data bronze
+run: data bronze silver
 	$(PY) scripts/verify_bronze.py $(DRY_FLAG)
+	$(PY) scripts/verify_silver.py $(DRY_FLAG)
