@@ -1,63 +1,117 @@
 # Guía de estilo Looker Studio — CSA Obra
 
 > **Lab de portafolio. Marca con fines ilustrativos.**  
-> Paleta inspirada en Ingeniería CSA (San Pedro de la Paz). Sin logos y sin letrero de marca. El informe **todavía no está publicado**: esta guía es el contrato visual. El plan de páginas es un borrador y se afina en el paso gold.
+> Paleta inspirada en Ingeniería CSA (San Pedro de la Paz). Sin logos y sin letrero de marca. El informe se arma a mano sobre `csa_gold`. Esta guía es el contrato visual, con los valores sin filtro de la semilla 42.
 
 Objetivo: que el jefe de obra lea avance contra programa, productividad HH y materiales con la misma fórmula en todas las páginas, números en es-CL y contraste AA.
 
-Fuente de las métricas: [`docs/modelo-datos.md`](../docs/modelo-datos.md). Si una fórmula de aquí no coincide con el modelo, manda el modelo. Los campos de Looker salen de `csa_gold`. Este paso no tiene cifras de verificación: no se inventan.
+Fuente de las métricas: [`docs/modelo-datos.md`](../docs/modelo-datos.md) y [`docs/paso-04-gold.md`](../docs/paso-04-gold.md). Si una fórmula de aquí no coincide con el modelo, manda el modelo. Los campos de Looker salen de `csa_gold`. Nada de bronze ni de `q_<tabla>`.
 
 Los porcentajes se calculan como SUM/SUM, nunca como promedio de porcentajes.
 
 ---
 
-## Plan de páginas (borrador)
+## Plan de páginas
 
-Tres páginas, las que abre un jefe de obra. El detalle de campos y vistas se cierra cuando exista gold. Footer en todas con el aviso del lab. Sin logo.
+Cuatro páginas. Footer en todas con el aviso del lab. Sin logo. Sin cross-filter. Botón **Restablecer** visible.
 
-Filtros comunes: **Obra** y **Período**. El período de Avance vs programa es la semana de corte (el acumulado va desde el inicio de la obra hasta ese lunes). El período de Productividad HH y de Materiales es la ventana seleccionada. Sin cross-filter. Un botón **Restablecer** visible.
+Filtros comunes: **Obra** (`d_obra.obra_id`) y **Período**. En Avance vs programa el período es la semana de corte (`d_fecha.fecha` unida a `semana_lunes`): el acumulado suma desde el inicio de la obra hasta ese lunes. En Productividad HH el período filtra `f_hh_cuadrilla.fecha`. En Materiales filtra `f_consumo_material.semana_lunes`. Sin filtro, el corte es el horizonte completo del extracto (lunes 4/5/2026 al 21/9/2026).
 
-| Página | Qué responde | Métrica de la tarjeta |
-|---|---|---|
-| Avance vs programa | ¿Vamos al día y cuánto del contrato ya está hecho? | `% avance físico` y `SPI`, más la curva de montos |
-| Productividad HH | ¿Cuántas HH se van por unidad en esta partida, y qué cuadrilla se aparta? | `HH por unidad ejecutada`, contra la HH teórica de la partida |
-| Materiales | ¿Dónde el consumo se aparta del presupuesto? | `desviación de consumo` |
+| Página | Qué responde | Fuente | Gráfico |
+|---|---|---|---|
+| Resumen de obras | ¿Qué obra va atrasada y cuánto del contrato ya está hecho? | `f_avance_partida` + `d_obra` + `d_partida` | 4 KPI y tabla por obra |
+| Avance vs programa | ¿La curva S y qué capítulo explica el atraso? | `f_avance_partida` + `d_partida` + `d_fecha` | Curva y barras |
+| Productividad HH | ¿Cuántas HH se van por unidad y qué cuadrilla se aparta? | `f_hh_cuadrilla` + `d_cuadrilla` + `d_partida` | Tabla y barras |
+| Materiales y desviación | ¿Dónde el consumo se aparta del presupuesto? | `f_consumo_material` + `d_material` + `d_proveedor` | KPI y barras |
+
+### Resumen de obras
+
+Fuente: `csa_gold.f_avance_partida`, `d_obra`, `d_partida`. El monto del contrato se suma en `d_partida`, una vez por partida.
+
+| Bloque | Tipo | Campos | Color |
+|---|---|---|---|
+| KPI % avance físico | Tarjeta | `SUM(monto_ejecutado) / SUM(monto_contrato)` | Valor `#1F5C3F` |
+| KPI SPI | Tarjeta | `SUM(monto_ejecutado) / SUM(monto_programado)` | Valor `#1F5C3F`. Semáforo del lab |
+| KPI monto ejecutado | Tarjeta | `SUM(monto_ejecutado)` | `#1F5C3F` |
+| KPI monto programado | Tarjeta | `SUM(monto_programado)` | `#1F5C3F` |
+| Tabla de obras | Tabla | `obra_nombre`, comuna, `SUM(monto_ejecutado)`, `SUM(monto_programado)`, SPI, % avance | Texto `#333333`. SPI con semáforo |
+
+Filtro de obra apagado en esta página: tiene que verse el ranking. Período: sin filtro = horizonte completo.
 
 ### Avance vs programa
 
-| Fila | Bloque | Columnas |
-|---|---|---|
-| 1 | 4 KPI: % avance físico, SPI, monto ejecutado acumulado, monto programado acumulado | 3 + 3 + 3 + 3 |
-| 2 | Curva acumulada: `SUM(monto_programado)` y `SUM(monto_ejecutado)` por `semana_lunes` | 8 |
-| 2 | Barras de SPI por capítulo. Cada barra es `SUM / SUM` | 4 |
-| 3 | Tabla partida: unidad, programado, ejecutado, % avance físico, SPI | 12 |
+| Bloque | Tipo | Campos | Color |
+|---|---|---|---|
+| Los mismos 4 KPI del Resumen | Tarjeta | Las fórmulas de arriba, con el filtro de esta página | `#1F5C3F` |
+| Curva S | Serie de dos líneas por `semana_lunes` | Acumulado de `SUM(monto_programado)` y de `SUM(monto_ejecutado)` | Programado `#1F5C3F`, ejecutado `#2E7D57`. Referencia no va en `#FED501` |
+| SPI por capítulo | Barras | `SUM(monto_ejecutado) / SUM(monto_programado)` dentro de cada `capitulo` | Relleno `#2E7D57`, borde `#1F5C3F` |
+| Tabla partida | Tabla | unidad, `SUM(cantidad_programada)`, `SUM(cantidad_ejecutada)`, % avance, SPI | `#333333` |
 
-El % avance de la tabla es `SUM(monto_ejecutado) / monto_contrato` de esa partida. `monto_contrato` entra una vez desde `d_partida`.
+El % avance de la tabla es `SUM(monto_ejecutado) / monto_contrato` de esa partida. `monto_contrato` entra una vez desde `d_partida`. La curva no promedia el SPI de cada semana: cada punto acumula las sumas y divide al final.
 
 ### Productividad HH
 
-Sin una partida elegida, la página abre con la tabla de partidas: cada fila calcula el ratio **dentro** de su unidad. No hay una tarjeta única que mezcle m³ con ml.
+Fuente: `csa_gold.f_hh_cuadrilla`, `d_cuadrilla`, `d_partida`. Sin una partida elegida no hay una tarjeta única: mezclaría m³ con ml. La tarjeta de HH por unidad, sin filtro de partida, muestra `—`.
 
-Con una partida elegida:
+| Bloque | Tipo | Campos | Color |
+|---|---|---|---|
+| Tabla por partida | Tabla | `partida_nombre`, `unidad_nombre`, `SUM(hh)`, `SUM(cantidad_ejecutada)`, `SUM(hh) / SUM(cantidad_ejecutada)` | `#333333`. El ratio se calcula dentro de la fila, una unidad |
+| KPI HH por unidad | Tarjeta, solo con una partida | `SUM(hh) / SUM(cantidad_ejecutada)` | `#1F5C3F` |
+| KPI HH teórica | Tarjeta | `hh_teorica_por_unidad` de `d_partida`. No es un promedio | `#8A5200` si se dibuja la referencia |
+| Barras por cuadrilla | Barras | El mismo `SUM(hh) / SUM(cantidad_ejecutada)`, cortado por `cuadrilla_nombre` | `#2E7D57` |
 
-| Fila | Bloque | Columnas |
-|---|---|---|
-| 1 | KPI HH por unidad, HH teórica de la partida, HH del período | 4 + 4 + 4 |
-| 2 | Serie semanal. Cada punto es `SUM(hh) / SUM(cantidad_ejecutada)` de esa semana | 12 |
-| 3 | Barras por cuadrilla, misma partida y misma unidad | 12 |
+Filtros: obra, partida, período sobre `fecha`. La HH teórica, si viene nula, no se dibuja.
 
-La HH teórica es `hh_teorica_por_unidad`. Si viene nula, la referencia no se dibuja y el KPI igual se calcula.
+### Materiales y desviación
 
-### Materiales
+Fuente: `csa_gold.f_consumo_material`, `d_material`, `d_proveedor`, `d_obra`. El rollup entre materiales es en montos, a precio de presupuesto.
 
-| Fila | Bloque | Columnas |
-|---|---|---|
-| 1 | KPI desviación de consumo, monto real, monto presupuestado | 4 + 4 + 4 |
-| 2 | Barras por familia. Cada barra cierra su propio `SUM / SUM` | 6 |
-| 2 | Barras por proveedor | 6 |
-| 3 | Tabla material: unidad, cantidades, desviación en monto. La desviación en cantidad solo se muestra en la fila de un material | 12 |
+| Bloque | Tipo | Campos | Color |
+|---|---|---|---|
+| KPI desviación | Tarjeta | `(SUM(monto_real) - SUM(monto_presupuestado)) / SUM(monto_presupuestado)` | `#1F5C3F`. Semáforo del lab |
+| KPI monto real | Tarjeta | `SUM(monto_real)` | `#1F5C3F` |
+| KPI monto presupuestado | Tarjeta | `SUM(monto_presupuestado)` | `#1F5C3F` |
+| Barras por familia | Barras | La desviación, `SUM / SUM` dentro de cada `familia` | `#2E7D57` |
+| Barras por proveedor | Barras | La misma fórmula por `proveedor_nombre` | `#1F5C3F` |
+| Tabla material | Tabla | unidad, cantidades, desviación en monto. La desviación en cantidad solo en la fila de un material | `#333333` |
 
-El subtítulo de la tarjeta dice «a precio de presupuesto». Así no se lee como una factura.
+Filtros: obra, familia, material, proveedor, semana. El subtítulo de la tarjeta dice «a precio de presupuesto».
+
+---
+
+## Valores esperados sin filtro
+
+Semilla 42, botón Restablecer, horizonte completo. Sirven para validar el informe recién conectado. Los montos son CLP enteros. La tarjeta redondea; el control es la división de las sumas.
+
+| Control | Esperado |
+|---|---|
+| Obras en `d_obra` | 7 |
+| Filas `f_avance_partida` | 735 |
+| Filas `f_hh_cuadrilla` | 1.470 |
+| Filas `f_consumo_material` | 882 |
+| Filas `d_fecha` | 208 (4/5/2026 a 27/11/2026) |
+| `SUM(monto_ejecutado)` | 4.941.031.200 |
+| `SUM(monto_programado)` | 5.503.260.000 |
+| `SUM(monto_contrato)` en `d_partida` | 6.879.075.000 |
+| SPI sin filtro | 4.941.031.200 / 5.503.260.000 = 0,8978. Tarjeta a 2 decimales: **0,90** |
+| % avance físico sin filtro | 4.941.031.200 / 6.879.075.000 = 0,7183. Tarjeta a 1 decimal: **71,8%** |
+| `SUM(monto_real)` | 2.430.951.600 |
+| `SUM(monto_presupuestado)` | 2.325.111.600 |
+| Desviación sin filtro | (2.430.951.600 − 2.325.111.600) / 2.325.111.600 = 0,0455. Tarjeta: **4,6%** |
+| `SUM(hh)` | 42.707,70 |
+| HH por unidad sin filtro de partida | `—` (hay más de una unidad) |
+
+En la tabla de obras, sin click adicional:
+
+| Obra | SPI | % avance físico |
+|---|---:|---:|
+| Reposición calzada Los Batros, San Pedro de la Paz | **0,70** | **0,56** |
+| Conservación costanera Talcahuano | **1,05** | **0,84** |
+| Conservación ruta Hualpén (paralizada) | **0,55** | |
+
+Materiales, fila cemento asfáltico de la reposición de Coronel (`OBR-05`, `MAT-ASF`, partida carpeta `PAR-05-203`): desviación **0,40**. El cemento de esa misma obra queda en 0.
+
+Productividad, cuadrilla de tierras: Los Batros **1,40** HH por unidad; Talcahuano **0,80**. Son `SUM(hh) / SUM(cantidad_ejecutada)` dentro de esa cuadrilla, no un promedio de días.
 
 ---
 
@@ -208,13 +262,13 @@ Un cero de HH o de cantidad sí se muestra como `0`. El guion es para un ratio s
 
 ---
 
-## 5. Checklist de armado (cuando exista gold)
+## 5. Checklist de armado
 
-El informe se crea en el paso de Looker. Esta lista es el orden, en español de la UI.
+El informe se crea a mano en Looker Studio. Esta lista es el orden, en español de la UI.
 
 1. Tema → fuente **Roboto**, fondo `#F4F6F3`.
 2. Paleta: `#FED501`, `#1F5C3F`, `#2E7D57`, `#333333`.
-3. Header 64px amarillo, texto `#1F5C3F`, filete `#1F5C3F` de 2px. En las tres páginas.
+3. Header 64px amarillo, texto `#1F5C3F`, filete `#1F5C3F` de 2px. En las cuatro páginas.
 4. Locale **Español (Chile)**.
 5. Cada tarjeta con la fórmula canónica y la polaridad de la sección 2.
 6. Formato condicional solo en la celda de SPI, de desviación o de HH por unidad. No pintar la fila entera.
@@ -224,11 +278,14 @@ El informe se crea en el paso de Looker. Esta lista es el orden, en español de 
 
 ### Verificación final
 
-Abrir el informe, **Restablecer** filtros y comprobar lo siguiente. Este paso no publica el informe y no trae cifras.
+Abrir el informe, **Restablecer** filtros y comprobar lo siguiente contra la tabla «Valores esperados sin filtro».
 
 | Comprobación | Esperado |
 |---|---|
-| Fuente de las tres páginas | Gold. Nada de bronze ni de `q_<tabla>` |
+| Fuente de las cuatro páginas | Gold. Nada de bronze ni de `q_<tabla>` |
+| SPI Los Batros | 0,70 |
+| Desviación asfalto Coronel | 0,40 |
+| SPI sin filtro | 0,90 en la tarjeta (sumas 4.941.031.200 / 5.503.260.000) |
 | % avance físico | `SUM(monto_ejecutado) / SUM(monto_contrato)`, con el contrato una vez por partida |
 | SPI | `SUM(monto_ejecutado) / SUM(monto_programado)` en la tarjeta y en cada punto de la serie |
 | HH por unidad ejecutada | `SUM(hh) / SUM(cantidad_ejecutada)`, con una sola unidad en el filtro |
@@ -246,4 +303,5 @@ Abrir el informe, **Restablecer** filtros y comprobar lo siguiente. Este paso no
 |---|---|
 | [`docs/modelo-datos.md`](../docs/modelo-datos.md) | Grano, indicadores y fórmulas que esta guía no reescribe |
 | [`README.md`](../README.md) | Objetivo del lab, preguntas y roadmap |
-| Esta guía | Tokens, contraste AA, borrador de páginas, es-CL |
+| Esta guía | Tokens, contraste AA, páginas finales, valores sin filtro, es-CL |
+| [`docs/paso-04-gold.md`](../docs/paso-04-gold.md) | Conteos gold y cómo correr `make run` en la Mac |

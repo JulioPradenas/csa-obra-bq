@@ -1,11 +1,10 @@
 # CSA Obra — lab runners
-# Uso: make test | make data | make bronze | make silver | make run
+# Uso: make test | make data | make bronze | make silver | make gold | make run
 #       make run DRY=1
 #
-# make run reconstruye bronze y silver desde cero: CSV, load y
-# CREATE OR REPLACE (sin DML). verify_bronze y verify_silver imprimen
-# RESULTADO: OK o RESULTADO: FALLA.
-# Gold sigue nombrado; el runner llega en un paso posterior.
+# make run reconstruye bronze, silver y gold desde cero: CSV, load y
+# CREATE OR REPLACE (sin DML). Gold no parte por fecha: CLUSTER BY.
+# verify_bronze, verify_silver y verify_gold imprimen RESULTADO: OK o RESULTADO: FALLA.
 #
 # Sandbox (sin facturación): sin DML, sin streaming. Las tablas expiran
 # a los 60 días; por eso make run no depende de lo que haya quedado de
@@ -53,9 +52,9 @@ silver:
 	$(PY) scripts/build_silver.py $(DRY_FLAG)
 
 gold:
-	@echo "Paso 3: gold llega después. No se llama a BigQuery."
-	@exit 1
+	$(PY) scripts/build_gold.py $(DRY_FLAG)
 
-run: data bronze silver
+run: data bronze silver gold
 	$(PY) scripts/verify_bronze.py $(DRY_FLAG)
 	$(PY) scripts/verify_silver.py $(DRY_FLAG)
+	$(PY) scripts/verify_gold.py $(DRY_FLAG)
