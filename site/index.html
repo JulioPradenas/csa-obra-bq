@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Obra vial · El 0,90 esconde a Hualpén</title>
+<style>
+:root {
+  --bg: #F4F6F3;
+  --green: #1F5C3F;
+  --green-2: #2E7D57;
+  --yellow: #FED501;
+  --text: #333333;
+  --muted: #4E5852;
+  --line: #D5DDD6;
+  --white: #FFFFFF;
+  --amber: #8A5200;
+  --amber-bg: #FFF4E0;
+  --red: #9C2F2F;
+  --red-bg: #FDECEC;
+  --green-bg: #E5F4EC;
+  --radius: 12px;
+  --gutter: 24px;
+  --shadow: 0 1px 2px rgba(31, 92, 63, 0.06), 0 8px 24px rgba(31, 92, 63, 0.06);
+  --max: 1120px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Roboto, Inter, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  font-feature-settings: "tnum" 1;
+}
+a { color: inherit; }
+.wrap { width: min(var(--max), calc(100% - 48px)); margin: 0 auto; }
+code {
+  font-family: ui-monospace, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 5px;
+  color: var(--green);
+}
+
+.hero {
+  background: var(--yellow);
+  color: var(--green);
+  padding: 36px 0 56px;
+  border-bottom: 2px solid var(--green);
+}
+.brand-name {
+  font-size: 13px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: 40px; font-weight: 750; letter-spacing: -0.03em;
+  line-height: 1.12; max-width: 18ch; margin-bottom: 12px;
+}
+.lede { font-size: 17px; max-width: 42em; margin-bottom: 22px; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 44px; padding: 0 18px; border-radius: 10px;
+  font-size: 14px; font-weight: 700; text-decoration: none;
+}
+.btn-primary { background: var(--green); color: #fff; }
+.btn-pending {
+  background: var(--white); color: var(--green);
+  border: 1px dashed var(--green); cursor: default;
+}
+.badge {
+  display: inline-flex; align-items: center; height: 28px; padding: 0 12px;
+  border-radius: 999px; border: 1px solid var(--green);
+  font-size: 12px; font-weight: 600;
+}
+
+.feature { margin-top: -28px; position: relative; z-index: 1; }
+.browser {
+  background: var(--white); border-radius: 14px; box-shadow: var(--shadow);
+  border: 1px solid var(--line); overflow: hidden;
+}
+.chrome {
+  height: 44px; background: #F7F8F4; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 12px; padding: 0 14px;
+}
+.dots { display: flex; gap: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: #D5DDD6; display: block; }
+.dots i:nth-child(1) { background: var(--red); }
+.dots i:nth-child(2) { background: var(--amber); }
+.dots i:nth-child(3) { background: var(--green-2); }
+.urlbar {
+  flex: 1; height: 26px; border-radius: 7px; background: var(--white);
+  border: 1px solid var(--line); color: var(--muted); font-size: 12px;
+  display: flex; align-items: center; padding: 0 10px;
+}
+.pending {
+  min-height: 280px;
+  background:
+    repeating-linear-gradient(-45deg, #F4F6F3, #F4F6F3 12px, #E7EBE6 12px, #E7EBE6 24px);
+  border-top: 1px dashed var(--green);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--green); font-weight: 700; letter-spacing: 0.04em;
+  text-transform: uppercase; font-size: 14px;
+}
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gutter); margin-top: 20px;
+}
+.kpi {
+  background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+  border: 1px solid var(--line); padding: 16px 18px;
+}
+.kpi-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.kpi-value { font-size: 30px; font-weight: 700; color: var(--green); letter-spacing: -0.03em; margin: 4px 0; }
+.kpi-value.bad { color: var(--red); }
+.kpi-hint { font-size: 13px; color: var(--muted); }
+
+section { margin-top: 56px; }
+.kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+h2 { font-size: 28px; letter-spacing: -0.03em; color: var(--green); margin-bottom: 8px; }
+.intro { color: var(--muted); max-width: 46em; margin-bottom: 20px; }
+
+.compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter);
+}
+.card {
+  background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow);
+  border: 1px solid var(--line); padding: 18px 20px;
+}
+.card h3 { color: var(--green); font-size: 16px; margin-bottom: 6px; }
+.card .big { font-size: 36px; font-weight: 700; letter-spacing: -0.03em; color: var(--green); }
+.card .big.bad { color: var(--red); }
+.card p { color: var(--muted); font-size: 14px; margin-top: 6px; }
+
+.pages { display: grid; gap: 16px; }
+.page {
+  display: grid; grid-template-columns: 280px 1fr; gap: 18px;
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 14px;
+}
+.page .pending { min-height: 160px; border: 1px dashed var(--green); border-radius: 8px; }
+.num { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); }
+.page h3 { color: var(--green); margin: 4px 0 6px; }
+.page p { color: var(--muted); font-size: 14px; }
+
+.trust { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.trust article, .dec {
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 14px;
+}
+.trust h3, .dec h3 { font-size: 14px; color: var(--green); margin-bottom: 6px; }
+.trust p, .dec p { font-size: 13px; color: var(--muted); }
+.eq { margin-top: 8px; }
+
+.flow {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch;
+  background: var(--white); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 16px;
+}
+.step { flex: 1 1 140px; }
+.step .layer { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--amber); }
+.step h3 { font-size: 14px; color: var(--green); }
+.arch-note { margin-top: 10px; color: var(--muted); font-size: 13px; }
+
+.decs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+
+footer {
+  margin-top: 64px; background: var(--green); color: #fff; padding: 36px 0;
+}
+footer .wrap { display: flex; justify-content: space-between; gap: 24px; align-items: start; }
+footer a { color: var(--yellow); text-decoration: none; font-weight: 700; }
+.disclaimer { max-width: 52em; color: rgba(255,255,255,0.92); font-size: 14px; }
+.role { display: block; color: rgba(255,255,255,0.75); font-size: 13px; margin-bottom: 4px; }
+
+@media (max-width: 900px) {
+  .hero h1 { font-size: 30px; max-width: none; }
+  .kpi-grid, .compare, .trust, .decs { grid-template-columns: 1fr 1fr; }
+  .page { grid-template-columns: 1fr; }
+  footer .wrap { flex-direction: column; }
+}
+@media (max-width: 560px) {
+  .wrap { width: calc(100% - 32px); }
+  .kpi-grid, .compare, .trust, .decs { grid-template-columns: 1fr; }
+  .cta-row { flex-direction: column; align-items: stretch; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="brand-name">Obra vial · lab</div>
+    <h1>El 0,90 esconde a Hualpén</h1>
+    <p class="lede">Un reporte para el jefe de obra: avance contra el programa, horas hombre por unidad y materiales que se pasan del presupuesto. Los porcentajes se suman. No se promedian.</p>
+    <div class="cta-row">
+      <span class="btn btn-pending">Link del reporte pendiente</span>
+      <a class="btn btn-primary" href="https://github.com/JulioPradenas/csa-obra-bq">Ver el pipeline</a>
+      <span class="badge">Lab de portafolio. Marca con fines ilustrativos.</span>
+    </div>
+  </div>
+</header>
+
+<div class="feature">
+  <div class="wrap">
+    <div class="browser">
+      <div class="chrome">
+        <div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="urlbar">captura pendiente · el reporte de Data Studio todavía no tiene link público</div>
+      </div>
+      <div class="pending" role="img" aria-label="captura pendiente">captura pendiente</div>
+    </div>
+    <div class="kpi-grid">
+      <article class="kpi">
+        <div class="kpi-label">SPI sin filtro</div>
+        <div class="kpi-value">0,90</div>
+        <div class="kpi-hint">4.941.031.200 / 5.503.260.000</div>
+      </article>
+      <article class="kpi">
+        <div class="kpi-label">Los Batros</div>
+        <div class="kpi-value bad">0,70</div>
+        <div class="kpi-hint">SPI. Avance físico 0,56. San Pedro de la Paz</div>
+      </article>
+      <article class="kpi">
+        <div class="kpi-label">Hualpén</div>
+        <div class="kpi-value bad">0,55</div>
+        <div class="kpi-hint">Paralizada. El 0,90 no la muestra</div>
+      </article>
+      <article class="kpi">
+        <div class="kpi-label">Asfalto Coronel</div>
+        <div class="kpi-value bad">0,40</div>
+        <div class="kpi-hint">Desviación. El global de materiales es 0,0455</div>
+      </article>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="wrap" id="historia">
+    <div class="kicker">La historia, sin filtro</div>
+    <h2>El total no es la obra</h2>
+    <p class="intro">Estos cortes salen de <code>f_avance_partida</code> y <code>f_consumo_material</code> con la misma regla que <code>verify_gold</code>. El SPI es la suma de lo ejecutado partida a partida, valorizada al precio de contrato, dividida por lo programado. No es el promedio de los SPI de cada obra.</p>
+    <div class="compare">
+      <article class="card">
+        <h3>SPI global</h3>
+        <div class="big">0,90</div>
+        <p>4.941.031.200 ejecutados sobre 5.503.260.000 programados. Avance físico global 0,72 contra el contrato de 6.879.075.000.</p>
+      </article>
+      <article class="card">
+        <h3>Hualpén · OBR-06</h3>
+        <div class="big bad">0,55</div>
+        <p>Obra paralizada. Talcahuano va en 1,05 y empuja el total. Los Batros, en ejecución, quedan en 0,70.</p>
+      </article>
+      <article class="card">
+        <h3>Tierras, Los Batros</h3>
+        <div class="big bad">1,40</div>
+        <p>HH por unidad. La cuadrilla de tierras de Talcahuano está en 0,80. <code>SUM(hh)</code> del lab: 42.707,7.</p>
+      </article>
+      <article class="card">
+        <h3>Cemento asfáltico, Coronel</h3>
+        <div class="big bad">0,40</div>
+        <p>Desviación de <code>MAT-ASF</code> en <code>OBR-05</code>. En plata, el consumo global se desvía 0,0455: 2.430.951.600 real contra 2.325.111.600 presupuestado.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="paginas">
+    <div class="kicker">El reporte, cuando esté publicado</div>
+    <h2>Cuatro páginas, una decisión cada una</h2>
+    <p class="intro">Julio arma el informe en Data Studio sobre <code>csa_gold</code>. Las capturas y el link público se reemplazan aquí cuando existan. Hoy el hueco dice lo que falta.</p>
+    <div class="pages">
+      <article class="page">
+        <div class="pending" role="img" aria-label="captura pendiente">captura pendiente</div>
+        <div>
+          <div class="num">01 · Resumen de obras</div>
+          <h3>¿Qué obra va atrasada?</h3>
+          <p>La tabla trae el SPI de cada obra. Sin filtro, Hualpén marca 0,55 y Los Batros 0,70. La tarjeta global es <code>SUM(monto_ejecutado) / SUM(monto_programado)</code>.</p>
+        </div>
+      </article>
+      <article class="page">
+        <div class="pending" role="img" aria-label="captura pendiente">captura pendiente</div>
+        <div>
+          <div class="num">02 · Avance vs programa</div>
+          <h3>La curva S, semana a semana</h3>
+          <p>Dos líneas acumuladas: programado en <span style="color:#1F5C3F">#1F5C3F</span> y ejecutado en <span style="color:#2E7D57">#2E7D57</span>. Cada punto vuelve a dividir las sumas. No promedia el SPI de la semana.</p>
+        </div>
+      </article>
+      <article class="page">
+        <div class="pending" role="img" aria-label="captura pendiente">captura pendiente</div>
+        <div>
+          <div class="num">03 · Productividad HH</div>
+          <h3>Horas hombre dentro de una unidad</h3>
+          <p>Sin partida elegida la tarjeta es un guion: hay m³ y toneladas en el mismo filtro. Con la cuadrilla de tierras, Los Batros da 1,40 y Talcahuano 0,80.</p>
+        </div>
+      </article>
+      <article class="page">
+        <div class="pending" role="img" aria-label="captura pendiente">captura pendiente</div>
+        <div>
+          <div class="num">04 · Materiales y desviación</div>
+          <h3>Dónde la bodega se pasó</h3>
+          <p>La desviación global es 0,0455. El cemento asfáltico de Coronel es 0,40. La fórmula es <code>(SUM(monto_real) − SUM(monto_presupuestado)) / SUM(monto_presupuestado)</code>, a precio de presupuesto.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="confianza">
+    <div class="kicker">Por qué el número se puede defender</div>
+    <h2>La arquitectura sostiene el tablero</h2>
+    <div class="trust">
+      <article>
+        <h3>El SPI no es un promedio</h3>
+        <p>Se suman montos de partida, no el SPI de cada obra.</p>
+        <div class="eq"><code>SUM(monto_ejecutado) / SUM(monto_programado)</code></div>
+      </article>
+      <article>
+        <h3>Nada se pierde entre capas</h3>
+        <p>Bronze 4.819 = silver 4.771 + cuarentena 48. En silver, 0 huérfanas.</p>
+        <div class="eq">bronze = silver + cuarentena</div>
+      </article>
+      <article>
+        <h3>El landing no tipa</h3>
+        <p>Bronze es STRING. Un <code>NO-CAST</code> entra y silver lo manda a cuarentena con un solo motivo.</p>
+        <div class="eq"><code>max_bad_records = 0</code></div>
+      </article>
+      <article>
+        <h3>Gold no parte por fecha</h3>
+        <p>En el sandbox la partición vence a los 60 días según su fecha. La curva de mayo a noviembre se cortaría.</p>
+        <div class="eq"><code>CLUSTER BY obra_id</code></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="arquitectura">
+    <div class="kicker">Pipeline</div>
+    <h2>De un CSV sintético al hecho</h2>
+    <div class="flow">
+      <div class="step"><div class="layer">Origen</div><h3>CSV seed 42</h3></div>
+      <div class="step"><div class="layer">Bronze</div><h3>csa_bronze · 4.819</h3></div>
+      <div class="step"><div class="layer">Silver</div><h3>csa_silver · 48 en cuarentena</h3></div>
+      <div class="step"><div class="layer">Gold</div><h3>csa_gold · 735 avances</h3></div>
+      <div class="step"><div class="layer">Consumo</div><h3>Data Studio · captura pendiente</h3></div>
+    </div>
+    <p class="arch-note">BigQuery sandbox, location US, sin DML. Un comando reconstruye todo: <code>make run</code>. Proyecto por <code>GCP_PROJECT</code>, sin default en el código. Siete obras, 1.470 partes diarios, 882 consumos de material.</p>
+  </section>
+
+  <section class="wrap" id="decisiones">
+    <div class="kicker">Decisiones</div>
+    <h2>Lo que el dashboard no puede contradecir</h2>
+    <div class="decs">
+      <article class="dec">
+        <h3>Tres granos</h3>
+        <p>La semana de la partida, el día de la cuadrilla y la semana del material no se aplastan en una tabla. El asfalto no es de una sola partida.</p>
+      </article>
+      <article class="dec">
+        <h3>Un motivo por fila mala</h3>
+        <p>Cast, nulo, duplicado, FK, fecha. La FK mira la dimensión silver ya limpia. Si una fila entra dos veces, 4.819 deja de cerrar.</p>
+      </article>
+      <article class="dec">
+        <h3>El contrato, una vez</h3>
+        <p><code>monto_contrato</code> vive en <code>d_partida</code>. Copiarlo en cada semana achicaría el % avance.</p>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="disclaimer">Lab de portafolio. Marca con fines ilustrativos. Datos sintéticos, semilla 42, obras ficticias en comunas reales del Biobío. No se atribuyen contratos a Ingeniería CSA ni a ningún empleador. El reporte de Data Studio todavía no está publicado: donde dice captura pendiente, falta la imagen, y donde dice Link del reporte pendiente, no hay URL.</p>
+    <div>
+      <span class="role">Autor</span>
+      Julio Pradenas<br/>
+      <a href="https://github.com/JulioPradenas">github.com/JulioPradenas</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
