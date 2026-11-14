@@ -1,5 +1,5 @@
 # CSA Obra — lab runners
-# Uso: make test | make data | make bronze | make silver | make gold | make run
+# Uso: make test | make data | make bronze | make silver | make gold | make looker | make run
 #       make run DRY=1
 #
 # make run reconstruye bronze, silver y gold desde cero: CSV, load y
@@ -30,10 +30,10 @@ else
   DRY_FLAG :=
 endif
 
-.PHONY: help test data bronze silver gold run
+.PHONY: help test data bronze silver gold looker run
 
 help:
-	@echo "Targets: data | bronze | silver | gold | run | test"
+	@echo "Targets: data | bronze | silver | gold | looker | run | test"
 	@echo "PY=$(PY)  DRY=$(DRY)"
 	@echo "GCP_PROJECT debe estar exportado para bronze, silver, gold y run reales (no hay default)."
 	@echo "En CI, DRY parte en 1. DRY=1 no consulta BigQuery."
@@ -54,7 +54,10 @@ silver:
 gold:
 	$(PY) scripts/build_gold.py $(DRY_FLAG)
 
-run: data bronze silver gold
+looker:
+	$(PY) scripts/build_looker_views.py $(DRY_FLAG)
+
+run: data bronze silver gold looker
 	$(PY) scripts/verify_bronze.py $(DRY_FLAG)
 	$(PY) scripts/verify_silver.py $(DRY_FLAG)
 	$(PY) scripts/verify_gold.py $(DRY_FLAG)

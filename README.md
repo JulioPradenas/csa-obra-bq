@@ -43,7 +43,7 @@ CSV sintéticos → bronze → silver (y q_<tabla>) → gold → Looker Studio
 | 2 | CSV sintéticos y bronze | listo |
 | 3 | Silver y cuarentena | listo |
 | 4 | Gold para el jefe de obra | este paso |
-| 5 | Looker Studio según la guía | pendiente |
+| 5 | Vistas para Looker Studio y armado del informe | vistas listas · informe en curso |
 
 `make run` regenera los CSV y reconstruye bronze, silver y gold. En CI, `DRY` parte en 1 y esa corrida no llama a BigQuery. `make test` tampoco.
 
@@ -83,6 +83,7 @@ make run DRY=1     # regenera CSV + dry-run de DDL, load y verificación
 - [Paso 2 — bronze sandbox](docs/paso-02-bronze.md) — CSV, anomalías, load job, límite de 60 días
 - [Paso 3 — silver y cuarentena](docs/paso-03-silver.md) — SAFE_CAST, un motivo por fila, conteos
 - [Paso 4 — gold](docs/paso-04-gold.md) — estrella, CLUSTER BY, valores sin filtro
+- [Paso 5 — vistas para Looker Studio](docs/paso-05-looker.md) — fuentes planas, contrato una vez por partida
 - [Guía de estilo Looker Studio](looker/STYLE_GUIDE.md) — paleta, contraste AA, páginas y valores esperados
 
 ## Disclaimer
